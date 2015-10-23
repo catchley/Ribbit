@@ -32,6 +32,7 @@ public class EditFriendsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_friends);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
     }
