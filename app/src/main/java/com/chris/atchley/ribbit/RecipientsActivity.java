@@ -1,7 +1,6 @@
 package com.chris.atchley.ribbit;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,13 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -27,7 +26,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipientsActivity extends ListActivity {
+public class RecipientsActivity extends AppCompatActivity {
 
     public static final String TAG = RecipientsActivity.class.getSimpleName();
 
@@ -37,15 +36,18 @@ public class RecipientsActivity extends ListActivity {
     protected MenuItem mSendMenuItem;
     protected Uri mMediaUri;
     protected String mFileType;
+    ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_recipients);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        mListView = (ListView)findViewById(R.id.lv);
+        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        TextView emptyText = (TextView) findViewById(R.id.empty);
+        mListView.setEmptyView(emptyText);
         mMediaUri = getIntent().getData();
         mFileType = getIntent().getExtras().getString(ParseConstants.KEY_FILE_TYPE);
     }
@@ -72,10 +74,10 @@ public class RecipientsActivity extends ListActivity {
                         i++;
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getListView().getContext(),
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(mListView.getContext(),
                             android.R.layout.simple_list_item_checked,
                             usernames);
-                    setListAdapter(adapter);
+                    mListView.setAdapter(adapter);
                 } else {
 
                     Log.e(TAG, e.getMessage());
@@ -90,7 +92,19 @@ public class RecipientsActivity extends ListActivity {
                 }
             }
         });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mListView.getCheckedItemCount() > 0) {
+                    mSendMenuItem.setVisible(true);
+                } else {
+                    mSendMenuItem.setVisible(false);
+                }
+            }
+        });
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,40 +121,46 @@ public class RecipientsActivity extends ListActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_send) {
-            ParseObject message = createMessage();
-            if(message == null){
-                //error
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.error_selecting_file)
-                        .setTitle(R.string.error_selecting_file_title)
-                        .setPositiveButton(android.R.string.ok, null);
-                AlertDialog dialog= builder.create();
-                dialog.show();
+
+
+            //noinspection SimplifiableIfStatement
+
+
+            if (id == R.id.action_send) {
+                ParseObject message = createMessage();
+                if (message == null) {
+                    //error
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(R.string.error_selecting_file)
+                            .setTitle(R.string.error_selecting_file_title)
+                            .setPositiveButton(android.R.string.ok, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    send(message);
+                    finish();
+                }
+                return true;
             }
-            else {
-                send(message);
-                finish();
-            }
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
 
-       if( l.getCheckedItemCount() > 0){
-          mSendMenuItem.setVisible(true);
-       }
-        else{
-           mSendMenuItem.setVisible(false);
-       }
 
-    }
+//    @Override
+//    protected void onListItemClick(ListView l, View v, int position, long id) {
+//        super.onListItemClick(l, v, position, id);
+//
+//       if( l.getCheckedItemCount() > 0){
+//          mSendMenuItem.setVisible(true);
+//       }
+//        else{
+//           mSendMenuItem.setVisible(false);
+//       }
+//
+//    }
 
     protected ParseObject createMessage(){
         ParseObject message = new ParseObject(ParseConstants.CLASS_MESSAGES);
@@ -168,8 +188,8 @@ public class RecipientsActivity extends ListActivity {
 
     protected ArrayList getRecipientIds(){
         ArrayList<String> recipientIds = new ArrayList<String>();
-        for(int i=0; i< getListView().getCount(); i++){
-            if(getListView().isItemChecked(i)){
+        for(int i=0; i< mListView.getCount(); i++){
+            if(mListView.isItemChecked(i)){
                 recipientIds.add(mFriends.get(i).getObjectId());
             }
         }
