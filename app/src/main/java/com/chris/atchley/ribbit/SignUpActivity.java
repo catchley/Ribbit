@@ -1,5 +1,6 @@
 package com.chris.atchley.ribbit;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,12 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        android.support.v7.app.ActionBar actionBar= getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.hide();
+
+        }
 
         mUsername = (EditText)findViewById(R.id.usernameField);
         mPassword = (EditText)findViewById(R.id.passwordField);
@@ -88,18 +95,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
 }

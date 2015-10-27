@@ -1,5 +1,6 @@
 package com.chris.atchley.ribbit;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+       android.support.v7.app.ActionBar actionBar= getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.hide();
+
+        }
 
         mSignUpTextView = (TextView) findViewById(R.id.signUpText);
         mSignUpTextView.setOnClickListener(new View.OnClickListener() {
@@ -90,19 +96,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
 }
